@@ -16,6 +16,7 @@ class Program
 
     public static void Main(string[] args)
     {
+        Console.Clear();
         string target = GetWordFromInput();
         Write($"The word to guess is {target}.");
         
@@ -25,6 +26,7 @@ class Program
         SortedSet<char> correctGuessSet= new SortedSet<char>();
 
         while (true){
+            Console.Clear();
             Write($"Your current guess is: {GenerateStringFromCorrectGuesses(target, correctGuesses)}");
             Write("You have already guessed: " + string.Join(", ", correctGuessSet));
             Write(HANGMAN_ART[wrongCount]);
