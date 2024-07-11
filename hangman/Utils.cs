@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 
 class Utils
 {
-    public static string GetWordFromInput()
+    public static string GetWordFromConsole()
     {
         Console.WriteLine("Please enter a word:");
         string? input = Console.ReadLine();
@@ -17,7 +17,7 @@ class Utils
         return input.ToLower();
     }
 
-    public static char GetLetterFromInput()
+    public static char GetLetterFromConsole()
     {
         Console.WriteLine("Please enter a letter:");
         string? input = Console.ReadLine();
