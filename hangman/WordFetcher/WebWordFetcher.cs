@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 
 class WebWordFetcher : IWordFetcher
 {
-    private readonly string URL = "https://random-word.ryanrk.com/api/en/word/random";
+    private static readonly string URL = "https://random-word.ryanrk.com/api/en/word/random";
     public string FetchWord()
     {
         try

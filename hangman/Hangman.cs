@@ -3,58 +3,84 @@ using System.Text;
 
 class Hangman
 {
-    static readonly int NUMBER_OF_GUESSES = 7;
-    static readonly string[] HANGMAN_ART =  {
-                                    "  +---+\n  |   |\n      |\n      |\n      |\n      |\n=========",
-                                    "  +---+\n  |   |\n  O   |\n      |\n      |\n      |\n=========",
-                                    "  +---+\n  |   |\n  O   |\n  |   |\n      |\n      |\n=========",
-                                    "  +---+\n  |   |\n  O   |\n /|   |\n      |\n      |\n=========",
-                                    "  +---+\n  |   |\n  O   |\n /|\\  |\n      |\n      |\n=========",
-                                    "  +---+\n  |   |\n  O   |\n /|\\  |\n /    |\n      |\n=========",
-                                    "  +---+\n  |   |\n  O   |\n /|\\  |\n / \\  |\n      |\n========="};
 
-    IWordFetcher wf;
     StringBuilder screenBuffer;
 
-    string target = "";
+    string? target;
     int incorrectGuessCount = 0;
     int correctGuessCount = 0;
     bool[]? correctGuesses;
+    SortedSet<char> incorrectGuessSet;
     SortedSet<char> correctGuessSet;
+    List<char> availableGuesses;
 
     public Hangman()
     {
         screenBuffer = new StringBuilder();
         correctGuessSet = new SortedSet<char>();
+        incorrectGuessSet = new SortedSet<char>();
+        availableGuesses = Enumerable.Range(97, 26).Select(x => (char)x).ToList();
     }
 
-    private void InitGame(string[] args)
+    private void ReadArgs(string[] args)
+    {
+        if (args.Length == 0)
+        {
+            return;
+        }
+        string flag;
+        for (int i = 0; i < args.Length; i++)
+        {
+            flag = args[i].Substring(1);
+            if (!GameSettings.args.ContainsKey(flag))
+            {
+                throw new ArgsFormatException("Incorrect option. Use -h to see all options usage.");
+            }
+
+            CommandLineArg arg = GameSettings.args[flag];
+            arg.ConsumeParameters(args, ref i);
+            arg.Act();
+        }
+    }
+
+    private void InitGame()
     {
         ClearDisplay();
-        wf = new WebWordFetcher();
-        target = wf.FetchWord();
+        target = GameSettings.wordFetcher.FetchWord();
         correctGuesses = new bool[target.Length];
     }
 
-    private bool PlayRound(string[] args)
+    private bool PlayRound()
     {
 
-        while (true)
+        if (target == null || correctGuesses == null)
+        {
+            return false;
+        }
+
+        bool running = true;
+        while (running)
         {
             ClearDisplay();
             screenBuffer.AppendLine($"Your current guess is: {Utils.GenerateStringFromCorrectGuesses(target, correctGuesses)}");
-            screenBuffer.AppendLine("You have already guessed: " + string.Join(", ", correctGuessSet));
-            screenBuffer.AppendLine(HANGMAN_ART[incorrectGuessCount]);
+            screenBuffer.AppendLine("Your correct guesses are: " + string.Join(", ", correctGuessSet));
+            screenBuffer.AppendLine("Your incorrect guesses are: " + string.Join(", ", incorrectGuessSet));
+            screenBuffer.AppendLine("Your available guesses are: " + string.Join(", ", availableGuesses));
+            screenBuffer.AppendLine(GameSettings.hangmanArt[incorrectGuessCount]);
             RenderBuffer();
 
             char letter = Utils.GetLetterFromConsole();
-            if (correctGuessSet.Contains(letter))
+            while (correctGuessSet.Contains(letter) || incorrectGuessSet.Contains(letter))
             {
                 screenBuffer.AppendLine("You have already guessed this letter!");
                 RenderBuffer();
-                continue;
+                letter = Utils.GetLetterFromConsole();
             }
-            correctGuessSet.Add(letter);
+
+            if (availableGuesses[letter - 'a'] != 95)
+            {
+                availableGuesses[letter - 'a'] = (char)95;
+            }
 
             bool correct = false;
             for (int i = 0; i < target.Length; i++)
@@ -64,25 +90,28 @@ class Hangman
                     correctGuesses[i] = true;
                     correct = true;
                     correctGuessCount++;
+                    correctGuessSet.Add(letter);
                 }
             }
             if (!correct)
             {
                 incorrectGuessCount++;
+                incorrectGuessSet.Add(letter);
             }
 
-            if (incorrectGuessCount >= NUMBER_OF_GUESSES - 1)
+            if (incorrectGuessCount >= GameSettings.NUMBER_OF_GUESSES - 1)
             {
                 screenBuffer.AppendLine("YOU LOST");
                 screenBuffer.AppendLine($"Your word is {target}");
-                break;
+                running = false;
             }
             if (correctGuessCount >= target.Length)
             {
                 screenBuffer.AppendLine("YOU WON");
                 screenBuffer.AppendLine($"Your word is {target}");
-                break;
+                running = false;
             }
+
         }
 
         screenBuffer.Append("Would you like to continue?[Y/N]: ");
@@ -99,14 +128,30 @@ class Hangman
         incorrectGuessCount = 0;
         correctGuessCount = 0;
         correctGuessSet.Clear();
-        target = wf.FetchWord();
+        incorrectGuessSet.Clear();
+        availableGuesses = Enumerable.Range(97, 26).Select(x => (char)x).ToList();
+        target = GameSettings.wordFetcher.FetchWord();
         correctGuesses = new bool[target.Length];
     }
 
     public void Run(string[] args)
     {
-        InitGame(args);
-        while (PlayRound(args))
+        try
+        {
+            ReadArgs(args);
+        }
+        catch (ArgumentException e)
+        {
+            Console.WriteLine(e.Message);
+            Environment.Exit(1);
+        }
+        catch (Exception)
+        {
+            Console.WriteLine("Unkown Exception.");
+            Environment.Exit(1);
+        }
+        InitGame();
+        while (PlayRound())
         {
             ResetRound();
         }
