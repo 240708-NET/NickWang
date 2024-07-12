@@ -12,7 +12,7 @@ class Utils
         //user can input uppwer or lower case word here
         Console.WriteLine("Please enter a word:");
         string? input = Console.ReadLine();
-        string match = "[a-zA-Z]+";
+        string match = "^[a-zA-Z]+$";
         Regex regex = new Regex(match);
 
         //validate with regex and try again if needed
@@ -22,6 +22,7 @@ class Utils
             input = Console.ReadLine();
         }
         //return only lower case word
+        Console.WriteLine($"your word is {input}");
         return input.ToLower();
     }
 
@@ -35,7 +36,7 @@ class Utils
         //user can input uppwer or lower case letter here
         Console.WriteLine("Please enter a letter:");
         string? input = Console.ReadLine();
-        string match = "[a-z|A-Z]";
+        string match = "^[a-z|A-Z]$";
         Regex regex = new Regex(match);
 
         //validate with regex and try again if needed
