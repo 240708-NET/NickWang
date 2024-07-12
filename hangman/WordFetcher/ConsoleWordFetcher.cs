@@ -1,10 +1,13 @@
-/// <summary>
-/// fetch a word through CLI
-/// </summary>
-class ConsoleWordFetcher : WordFetcher
+namespace Fetcher
 {
-    public override string FetchWord()
+    /// <summary>
+    /// fetch a word through CLI
+    /// </summary>
+    class ConsoleWordFetcher : WordFetcher
     {
-        return Utils.GetWordFromConsole();
+        public override string FetchWord()
+        {
+            return Utils.GetWordFromConsole();
+        }
     }
 }

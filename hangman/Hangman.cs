@@ -1,4 +1,6 @@
 using System.Text;
+using CLIArgs;
+using HangmanExceptions;
 
 /*
 This program is a command line hangman game. 
@@ -229,7 +231,7 @@ class Hangman
             //try reading args. Exceptions may be thrown when reading args
             ReadArgs(args);
         }
-        catch (ArgumentException e)
+        catch (System.ArgumentException e)
         {
             //all Exceptions related to reading args
             Console.WriteLine(e.Message);

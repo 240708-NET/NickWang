@@ -1,3 +1,7 @@
+using CLIArgs;
+using Fetcher;
+
+
 /// <summary>
 /// settigns of the program are set here. all fields here are static
 /// CommandLineArgs modify program behavior here

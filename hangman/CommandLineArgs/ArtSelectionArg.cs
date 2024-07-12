@@ -1,58 +1,63 @@
-/// <summary>
-/// arg to select ASCII art asset
-/// </summary>
-class ArtSelectionArg : CommandLineArg
+using HangmanExceptions;
+
+namespace CLIArgs
 {
-    string selection = "";
-
-    public ArtSelectionArg(string flag) : base(flag)
-    {
-    }
-
     /// <summary>
-    /// update GameSettings.hangmanArt according to arg. 
+    /// arg to select ASCII art asset
     /// </summary>
-    /// <exception cref="UnrecognizedParamException"></exception>
-    public override void Act()
+    class ArtSelectionArg : CommandLineArg
     {
-        if (selection == "1")
+        string selection = "";
+
+        public ArtSelectionArg(string flag) : base(flag)
         {
-            GameSettings.hangmanArt = DisplayConstants.HANGMAN_ART_1;
-            return;
         }
 
-        if (selection == "2")
+        /// <summary>
+        /// update GameSettings.hangmanArt according to arg. 
+        /// </summary>
+        /// <exception cref="UnrecognizedParamException"></exception>
+        public override void Act()
         {
-            GameSettings.hangmanArt = DisplayConstants.HANGMAN_ART_2;
-            return;
-        }
-        throw new UnrecognizedParamException("Unrecognized parameter.");
-    }
+            if (selection == "1")
+            {
+                GameSettings.hangmanArt = DisplayConstants.HANGMAN_ART_1;
+                return;
+            }
 
-    /// <summary>
-    /// read 1 required argument 
-    /// </summary>
-    /// <param name="args"></param>
-    /// <param name="index"></param>
-    /// <exception cref="ParamsCountException"></exception>
-    public override void ConsumeParameters(string[] args, ref int index)
-    {
-        try
-        {
-            selection = args[++index];
+            if (selection == "2")
+            {
+                GameSettings.hangmanArt = DisplayConstants.HANGMAN_ART_2;
+                return;
+            }
+            throw new UnrecognizedParamException("Unrecognized parameter.");
         }
-        catch (System.IndexOutOfRangeException)
-        {
-            throw new ParamsCountException("Incorrect number of parameters.");
-        }
-        catch (System.Exception)
-        {
-            throw new ParamsCountException("Unknown error when reading parameters.");
-        }
-    }
 
-    public override string Description()
-    {
-        return $"   --{flag} <param> selects between different hangman art options.\n        Available params are \n       1 - (default) art option 1 \n       2 - art option 2";
+        /// <summary>
+        /// read 1 required argument 
+        /// </summary>
+        /// <param name="args"></param>
+        /// <param name="index"></param>
+        /// <exception cref="ParamsCountException"></exception>
+        public override void ConsumeParameters(string[] args, ref int index)
+        {
+            try
+            {
+                selection = args[++index];
+            }
+            catch (System.IndexOutOfRangeException)
+            {
+                throw new ParamsCountException("Incorrect number of parameters.");
+            }
+            catch (System.Exception)
+            {
+                throw new ParamsCountException("Unknown error when reading parameters.");
+            }
+        }
+
+        public override string Description()
+        {
+            return $"   --{flag} <param> selects between different hangman art options.\n        Available params are \n       1 - (default) art option 1 \n       2 - art option 2";
+        }
     }
 }

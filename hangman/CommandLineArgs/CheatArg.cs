@@ -1,38 +1,43 @@
-/// <summary>
-/// arg to enable display the answer to user
-/// </summary>
-class CheatArg : CommandLineArg
+using HangmanExceptions;
+
+namespace CLIArgs
 {
-    public CheatArg(string flag) : base(flag) { }
-
     /// <summary>
-    /// set GameSettings.enableCheats to true
+    /// arg to enable display the answer to user
     /// </summary>
-    public override void Act()
+    class CheatArg : CommandLineArg
     {
-        GameSettings.enableCheats = true;
-    }
+        public CheatArg(string flag) : base(flag) { }
 
-    /// <summary>
-    /// does not require any additional parameter
-    /// </summary>
-    /// <param name="args"></param>
-    /// <param name="index"></param>
-    /// <exception cref="ParamsReadException"></exception>
-    public override void ConsumeParameters(string[] args, ref int index)
-    {
-        try
+        /// <summary>
+        /// set GameSettings.enableCheats to true
+        /// </summary>
+        public override void Act()
         {
-
+            GameSettings.enableCheats = true;
         }
-        catch (System.Exception)
+
+        /// <summary>
+        /// does not require any additional parameter
+        /// </summary>
+        /// <param name="args"></param>
+        /// <param name="index"></param>
+        /// <exception cref="ParamsReadException"></exception>
+        public override void ConsumeParameters(string[] args, ref int index)
         {
-            throw new ParamsReadException("Unknown error when reading parameters.");
-        }
-    }
+            try
+            {
 
-    public override string Description()
-    {
-        return $"   --{flag} enable cheats. Allows user to see the answer.";
+            }
+            catch (System.Exception)
+            {
+                throw new ParamsReadException("Unknown error when reading parameters.");
+            }
+        }
+
+        public override string Description()
+        {
+            return $"   --{flag} enable cheats. Allows user to see the answer.";
+        }
     }
 }

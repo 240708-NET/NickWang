@@ -1,38 +1,43 @@
-/// <summary>
-/// arg to disable terminal clearing 
-/// </summary>
-class ClearScreenArg : CommandLineArg
+using HangmanExceptions;
+
+namespace CLIArgs
 {
-    public ClearScreenArg(string name) : base(name) { }
-
     /// <summary>
-    /// set GameSettings.disableClear to true
+    /// arg to disable terminal clearing 
     /// </summary>
-    public override void Act()
+    class ClearScreenArg : CommandLineArg
     {
-        GameSettings.disableClear = true;
-    }
+        public ClearScreenArg(string name) : base(name) { }
 
-    /// <summary>
-    /// does not require any additional parameter
-    /// </summary>
-    /// <param name="args"></param>
-    /// <param name="index"></param>
-    /// <exception cref="ParamsReadException"></exception>
-    public override void ConsumeParameters(string[] args, ref int index)
-    {
-        try
+        /// <summary>
+        /// set GameSettings.disableClear to true
+        /// </summary>
+        public override void Act()
         {
-
+            GameSettings.disableClear = true;
         }
-        catch (System.Exception)
+
+        /// <summary>
+        /// does not require any additional parameter
+        /// </summary>
+        /// <param name="args"></param>
+        /// <param name="index"></param>
+        /// <exception cref="ParamsReadException"></exception>
+        public override void ConsumeParameters(string[] args, ref int index)
         {
-            throw new ParamsReadException("Unknown error when reading parameters.");
-        }
-    }
+            try
+            {
 
-    public override string Description()
-    {
-        return $"   --{flag} disable clearing the terminal.";
+            }
+            catch (System.Exception)
+            {
+                throw new ParamsReadException("Unknown error when reading parameters.");
+            }
+        }
+
+        public override string Description()
+        {
+            return $"   --{flag} disable clearing the terminal.";
+        }
     }
 }
