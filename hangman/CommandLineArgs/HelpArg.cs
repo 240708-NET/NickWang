@@ -16,7 +16,7 @@ class HelpArg : CommandLineArg
 
     public override string Description()
     {
-        return $"   -{flag} list the available args";
+        return $"   --{flag} list the available args";
     }
 
 

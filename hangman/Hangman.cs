@@ -1,6 +1,37 @@
-
 using System.Text;
 
+/*
+This program is a command line hangman game. 
+The user has the option to pass in arguments to alter the behavior of the program.
+The available options are --help, --source to control the source of the word choice,
+--cheats to enable cheats, --art to pick the ascii art style.
+
+When the program is launched it first fetches a word either through CLI(default) or 
+an API call configured through program args. A failed API call will default the program 
+back to getting the word from CLI. User input through CLI is checked. An invalid input 
+should result in a repeated prompt.
+
+Once a word choice is obtained, the game begins and the user is shown the following things:
+    - the current progres. this is what letters and position the user has guessed correctly 
+    - the correct guesses. letters that have been correctly guessed displayed in sorted order
+    - the incorrect guesses. letters that have been incorrectly guessed displayed in sorted order
+    - the available guesses. letters that have not been guessed. already guessed letters are not removed from this list but replaced with '_'
+    - an ascii art of the hangman representing the progress of the game
+
+The user is repeatedly prompted for guesses, then that guess is processed, 
+until either the user wins or losses. When the user is prompted a letter, they will 
+have to enter a single a-z letter in either lower or upper case. If the input is 
+invalid, the user is repeatedly prompted until a valid input is provided. If a 
+letter is valid but has been guessed, the user is prompted again. Then the 
+information on screen is updated to reflect the new guess. If a correct letter 
+is guessed, the "current guess" displays the new guess in the correct position 
+in the word. "correct guesses" and "incorrect guesses" now show the new guess. 
+"available guesses" removes the new guess. Ascii hangman art should be updated 
+to reflect the new guess.
+
+Once the user either wins or losses, they are prompted to play agin. The response
+should be a single lower/upper case letter 'Y' for yes and everything else for no.
+*/
 class Hangman
 {
 
@@ -31,7 +62,7 @@ class Hangman
         string flag;
         for (int i = 0; i < args.Length; i++)
         {
-            flag = args[i].Substring(1);
+            flag = args[i].Substring(2);
             if (!GameSettings.args.ContainsKey(flag))
             {
                 throw new ArgsFormatException("Incorrect option. Use -h to see all options usage.");
@@ -62,6 +93,10 @@ class Hangman
         while (running)
         {
             ClearDisplay();
+            if (GameSettings.enableCheats)
+            {
+                screenBuffer.AppendLine($"The answer is: {target}");
+            }
             screenBuffer.AppendLine($"Your current guess is: {Utils.GenerateStringFromCorrectGuesses(target, correctGuesses)}");
             screenBuffer.AppendLine("Your correct guesses are: " + string.Join(", ", correctGuessSet));
             screenBuffer.AppendLine("Your incorrect guesses are: " + string.Join(", ", incorrectGuessSet));
@@ -159,6 +194,7 @@ class Hangman
 
     private void ClearDisplay()
     {
+        if (GameSettings.disableClear) return;
         Console.Clear();
     }
 

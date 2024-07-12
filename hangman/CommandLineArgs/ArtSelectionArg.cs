@@ -40,6 +40,6 @@ class ArtSelectionArg : CommandLineArg
 
     public override string Description()
     {
-        return $"   -{flag} <param> selects between different hangman art options.\n        Available params are \n       1 - (default) art option 1 \n       2 - art option 2";
+        return $"   --{flag} <param> selects between different hangman art options.\n        Available params are \n       1 - (default) art option 1 \n       2 - art option 2";
     }
 }

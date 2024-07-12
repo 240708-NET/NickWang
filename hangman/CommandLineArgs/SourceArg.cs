@@ -24,7 +24,7 @@ class SourceArg : CommandLineArg
 
     public override string Description()
     {
-        return $"   -{flag} <param> defines the method of fetching the word used in hangman. Available params are \n       console - (default) promts the user for a word \n       web     - fetch a random word from https://random-word.ryanrk.com/api/en/word/random";
+        return $"   --{flag} <param> defines the method of fetching the word used in hangman. Available params are \n       console - (default) promts the user for a word \n       web     - fetch a random word from https://random-word.ryanrk.com/api/en/word/random";
     }
     public override void Act()
     {
