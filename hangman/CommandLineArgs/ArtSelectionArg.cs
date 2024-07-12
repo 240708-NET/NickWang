@@ -1,3 +1,6 @@
+/// <summary>
+/// arg to select ASCII art asset
+/// </summary>
 class ArtSelectionArg : CommandLineArg
 {
     string selection = "";
@@ -6,6 +9,10 @@ class ArtSelectionArg : CommandLineArg
     {
     }
 
+    /// <summary>
+    /// update GameSettings.hangmanArt according to arg. 
+    /// </summary>
+    /// <exception cref="UnrecognizedParamException"></exception>
     public override void Act()
     {
         if (selection == "1")
@@ -22,6 +29,12 @@ class ArtSelectionArg : CommandLineArg
         throw new UnrecognizedParamException("Unrecognized parameter.");
     }
 
+    /// <summary>
+    /// read 1 required argument 
+    /// </summary>
+    /// <param name="args"></param>
+    /// <param name="index"></param>
+    /// <exception cref="ParamsCountException"></exception>
     public override void ConsumeParameters(string[] args, ref int index)
     {
         try

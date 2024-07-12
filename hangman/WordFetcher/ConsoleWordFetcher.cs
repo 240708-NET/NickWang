@@ -1,6 +1,9 @@
-class ConsoleWordFetcher : IWordFetcher
+/// <summary>
+/// fetch a word through CLI
+/// </summary>
+class ConsoleWordFetcher : WordFetcher
 {
-    public string FetchWord()
+    public override string FetchWord()
     {
         return Utils.GetWordFromConsole();
     }
