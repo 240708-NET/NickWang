@@ -231,7 +231,7 @@ class Hangman
             //try reading args. Exceptions may be thrown when reading args
             ReadArgs(args);
         }
-        catch (System.ArgumentException e)
+        catch (HangmanExceptions.ArgumentException e)
         {
             //all Exceptions related to reading args
             Console.WriteLine(e.Message);
