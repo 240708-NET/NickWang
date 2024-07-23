@@ -36,6 +36,14 @@ public class Coordinate : ICloneable
         X += dimension.X - 1;
     }
 
+    public void UndoRotate(Coordinate dimension)
+    {
+        X -= dimension.X - 1;
+        int tempX = X;
+        X = Y;
+        Y = -tempX;
+    }
+
     public void RotateDimensionRight()
     {
         int tempX = X;
