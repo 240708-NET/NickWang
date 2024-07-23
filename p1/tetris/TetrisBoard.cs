@@ -3,30 +3,20 @@ public class Board
     Random rand;
     Coordinate currentPos;
     TetrisShape currentShape;
-    public int boardOffset { get; set; } = 1;
-    public char[,] board { get; set; }
+    public TetrisShape nextShape { get; set; }
+    public TetrisLinkedList board { get; set; }
     public TetirsColor[,] colorBoard { get; set; }
+
 
     public Board()
     {
-        board = new char[20, 10];
-        InitBoardWithChar(' ');
+        board = new TetrisLinkedList();
         colorBoard = new TetirsColor[20, 10];
         rand = new Random(Guid.NewGuid().GetHashCode());
-        currentPos = new Coordinate(TetrisUtils.CyclicY(boardOffset - 1), 4);
+        currentPos = new Coordinate(0, 4);
         currentShape = PickRandomBlock();
+        nextShape = PickRandomBlock();
         UpdateShape();
-    }
-
-    private void InitBoardWithChar(char character)
-    {
-        for (int y = 0; y < TetrisConstants.BoardHeight; y++)
-        {
-            for (int x = 0; x < TetrisConstants.BoardWidth; x++)
-            {
-                board[y, x] = ' ';
-            }
-        }
     }
 
     private TetrisShape PickRandomBlock()
@@ -37,9 +27,10 @@ public class Board
     public bool PickNewBlock()
     {
         bool gameStillRunning = true;
-        currentPos.Y = TetrisUtils.CyclicY(boardOffset - 1);
+        currentPos.Y = 0;
         currentPos.X = 4;
-        currentShape = PickRandomBlock();
+        currentShape = nextShape;
+        nextShape = PickRandomBlock();
         if (CheckLoseCondition(currentPos, currentShape))
         {
             gameStillRunning = false;
@@ -54,8 +45,8 @@ public class Board
         foreach (var coord in tetrisShape.Shape)
         {
             pos = coord + position;
-            board[TetrisUtils.CyclicY(pos.Y), pos.X] = '\u25A0';
-            colorBoard[TetrisUtils.CyclicY(pos.Y), pos.X] = tetrisShape.Color;
+            board.ElementAt(pos.Y)[pos.X] = TetrisConstants.TetrisBlock;
+            colorBoard[pos.Y, pos.X] = tetrisShape.Color;
         }
     }
     public void UpdateShape()
@@ -69,8 +60,8 @@ public class Board
         foreach (var coord in tetrisShape.Shape)
         {
             pos = coord + position;
-            board[TetrisUtils.CyclicY(pos.Y), pos.X] = ' ';
-            colorBoard[TetrisUtils.CyclicY(pos.Y), pos.X] = TetirsColor.Gray;
+            board.ElementAt(pos.Y)[pos.X] = TetrisConstants.Empty;
+            colorBoard[pos.Y, pos.X] = TetirsColor.Gray;
         }
     }
 
@@ -85,8 +76,8 @@ public class Board
         {
             if (position.X + coord.X < 0 ||
                 position.X + coord.X >= TetrisConstants.BoardWidth ||
-                TetrisUtils.CartesanYToOffsetY(position.Y + coord.Y, boardOffset) >= TetrisConstants.BoardHeight - 1 ||
-                board[TetrisUtils.CyclicY(position.Y + coord.Y), position.X + coord.X] != ' ')
+                position.Y + coord.Y >= TetrisConstants.BoardHeight ||
+                board.ElementAt(position.Y + coord.Y)[position.X + coord.X] != TetrisConstants.Empty)
             {
                 return false;
             }
@@ -101,11 +92,11 @@ public class Board
 
     public bool GravityUpdate(Coordinate position, TetrisShape tetrisShape)
     {
-        currentPos.Y = TetrisUtils.CyclicY(currentPos.Y + 1);
+        currentPos.Y++;
         bool isValidMove = IsValidMove(position, tetrisShape);
         if (!isValidMove)
         {
-            currentPos.Y = TetrisUtils.CyclicY(currentPos.Y - 1);
+            currentPos.Y--;
         }
         UpdateShape(position, tetrisShape);
         return isValidMove;
@@ -118,17 +109,19 @@ public class Board
 
     public int EliminateRows()
     {
-        int i = 0;
         int rowCount = 0;
-        bool bottomRows = true;
         bool rowComplete;
-        for (int y = TetrisUtils.CyclicY(boardOffset - 2); i < TetrisConstants.BoardHeight; i++)
+
+        TetrisLinkedListNode? node = board.First;
+        TetrisLinkedListNode? last = null;
+        TetrisLinkedListNode? temp;
+        while (node != null)
         {
-            Console.WriteLine($"checking y: {y}");
+
             rowComplete = true;
             for (int x = 0; x < TetrisConstants.BoardWidth; x++)
             {
-                if (board[y, x] == ' ')
+                if (node.Row[x] == TetrisConstants.Empty)
                 {
                     rowComplete = false;
                     break;
@@ -139,24 +132,24 @@ public class Board
                 rowCount++;
                 for (int x = 0; x < TetrisConstants.BoardWidth; x++)
                 {
-                    board[y, x] = ' ';
+                    node.Row[x] = TetrisConstants.Empty;
                 }
-                if (bottomRows)
+
+                if (last != null)
                 {
-                    boardOffset--;
+                    last.Next = node.Next;
+                    node.Next = board.First;
+                    board.First = node;
                 }
+
+
             }
-            else
-            {
-                if (bottomRows)
-                {
-                    bottomRows = false;
-                }
-            }
-            y = TetrisUtils.CyclicY(y - 1);
+
+            temp = last;
+            last = node;
+            node = last.Next;
         }
-        boardOffset = TetrisUtils.CyclicY(boardOffset);
-        // System.Threading.Thread.Sleep(2000);
+
         return rowCount;
     }
 
@@ -166,7 +159,7 @@ public class Board
         foreach (var coord in tetrisShape.Shape)
         {
             pos = position + coord;
-            if (board[TetrisUtils.CyclicY(pos.Y), pos.X] != ' ')
+            if (board.ElementAt(pos.Y)[pos.X] != TetrisConstants.Empty)
             {
                 return true;
             }
@@ -205,15 +198,16 @@ public class Board
     {
         while (true)
         {
-            currentPos.Y = TetrisUtils.CyclicY(currentPos.Y + 1);
+            currentPos.Y++;
             if (!IsValidMove(currentPos, currentShape))
             {
-                currentPos.Y = TetrisUtils.CyclicY(currentPos.Y - 1);
+                currentPos.Y--;
                 break;
             }
         }
         UpdateShape(currentPos, currentShape);
+        int rowsEliminated = EliminateRows();
         PickNewBlock();
-        return EliminateRows();
+        return rowsEliminated;
     }
 }

@@ -3,6 +3,8 @@ public class TetrisConstants
 {
     public static readonly int BoardWidth = 10;
     public static readonly int BoardHeight = 20;
+    public static readonly char TetrisBlock = '\u25A0';
+    public static readonly char Empty = ' ';
     public static readonly TetrisShape IBlock;
     public static readonly TetrisShape LBlock;
     public static readonly TetrisShape OBlock;

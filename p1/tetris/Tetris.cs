@@ -4,50 +4,58 @@ public partial class Tetris
 {
 
     long GravityUpdateBlockTimeMilliseconds = 1000;
+    long InputDelayTimeMilliseconds = 10;
 
     Board board;
+
+    int totalLineCleared;
+    int score;
 
 
     bool gameRunning = true;
     ConsoleKeyInfo keyinfo;
-    Stopwatch? gravityWatch;
+    Stopwatch gravityWatch;
+    Stopwatch inputWatch;
 
 
     public Tetris()
     {
         board = new Board();
+        inputWatch = Stopwatch.StartNew();
+        gravityWatch = Stopwatch.StartNew();
     }
 
     public void Run()
     {
-        // Stopwatch inputWatch = Stopwatch.StartNew();
-        gravityWatch = Stopwatch.StartNew();
+        Console.CursorVisible = false;
         Display();
         while (gameRunning)
         {
             HandleKeyPress();
-            HandleGravityUpdate(gravityWatch);
+            HandleGravityUpdate(false);
         }
     }
 
-    private void HandleGravityUpdate(Stopwatch watch)
+    private void HandleGravityUpdate(bool byPassTimer)
     {
-        if (watch.ElapsedMilliseconds >= GravityUpdateBlockTimeMilliseconds)
+        if (byPassTimer ||
+            gravityWatch.ElapsedMilliseconds >= GravityUpdateBlockTimeMilliseconds)
         {
             board.UndoShape();
             if (!board.GravityUpdate())
             {
+                UpdateScore(board.EliminateRows());
                 gameRunning = board.PickNewBlock();
-                board.EliminateRows();
             }
             Display();
-            watch.Restart();
+            gravityWatch.Restart();
         }
     }
 
     private void HandleKeyPress()
     {
-        if (Console.KeyAvailable)
+        if (Console.KeyAvailable &&
+            inputWatch.ElapsedMilliseconds >= InputDelayTimeMilliseconds)
         {
             keyinfo = Console.ReadKey(true);
             board.UndoShape();
@@ -63,32 +71,62 @@ public partial class Tetris
                     board.MoveUp();
                     break;
                 case ConsoleKey.DownArrow:
-                    board.MoveDown();
+                    // UpdateScore(board.MoveDown());
+                    HandleGravityUpdate(true);
                     break;
                 default:
                     break;
             }
             board.UpdateShape();
             Display();
+            inputWatch.Restart();
         }
+    }
+
+    private void UpdateScore(int linesCleared)
+    {
+        score += linesCleared * linesCleared * 100;
+        totalLineCleared += linesCleared;
     }
 
     public void Display()
     {
         Console.Clear();
-        int i = 0;
-        for (int y = TetrisUtils.CyclicY(board.boardOffset - 1); i < TetrisConstants.BoardHeight; i++)
+        int y = 0;
+
+        TetrisLinkedListNode? node = board.board.First;
+        while (node != null)
         {
             for (int x = 0; x < TetrisConstants.BoardWidth; x++)
             {
                 TetrisUtils.SelectColor(board.colorBoard[y, x]);
-                Console.Write(board.board[y, x]);
+                Console.Write(node.Row[x]);
             }
             Console.ForegroundColor = ConsoleColor.Gray;
-            Console.Write('|');
+            Console.Write(TetrisConstants.TetrisBlock);
             Console.Write(y);
             Console.WriteLine();
-            y = TetrisUtils.CyclicY(y + 1);
+            y++;
+            node = node.Next;
+        }
+        Console.WriteLine("\u25A0\u25A0\u25A0\u25A0\u25A0\u25A0\u25A0\u25A0\u25A0\u25A0\u25A0");
+
+        int cursorX = 25;
+        int cursorY = 0;
+
+        Console.SetCursorPosition(cursorX, cursorY++);
+        Console.WriteLine($"Score: {score}");
+        Console.SetCursorPosition(cursorX, cursorY++);
+        Console.WriteLine($"Line Count: {totalLineCleared}");
+        Console.SetCursorPosition(cursorX, cursorY++);
+        Console.WriteLine($"Next Shape:");
+        cursorX = 30;
+        Console.SetCursorPosition(cursorX, cursorY++);
+        TetrisUtils.SelectColor(board.nextShape.Color);
+        foreach (var coord in board.nextShape.Shape)
+        {
+            Console.SetCursorPosition(cursorX + coord.X, cursorY + coord.Y);
+            Console.Write(TetrisConstants.TetrisBlock);
         }
     }
 }

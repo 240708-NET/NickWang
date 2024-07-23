@@ -32,14 +32,5 @@ public class TetrisUtils
                 break;
         }
     }
-
-    public static int CyclicY(int y)
-    {
-        return (y + TetrisConstants.BoardHeight) % TetrisConstants.BoardHeight;
-    }
-    public static int CartesanYToOffsetY(int y, int offset)
-    {
-        return (y - offset + TetrisConstants.BoardHeight) % TetrisConstants.BoardHeight;
-    }
 }
 
