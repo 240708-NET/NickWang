@@ -8,6 +8,11 @@ public class Coordinate : ICloneable
     static int[] sin = [0, 1, 0, -1];
     static int[] cos = [1, 0, -1, 0];
 
+    public Coordinate()
+    {
+
+    }
+
     public Coordinate(int y, int x)
     {
         Y = y;

@@ -1,30 +1,41 @@
-
-public class TetrisUtils
+public enum Color
 {
+    IBlockColor,
+    LBlockColor,
+    OBlockColor,
+    JBlockColor,
+    SBlockColor,
+    TBlockColor,
+    ZBlockColor,
+    DefaultColor
+}
 
-    public static void SelectColor(TetirsColor color)
+
+public class ColorHelper
+{
+    public static void SelectColor(Color color)
     {
         switch (color)
         {
-            case TetirsColor.Cyan:
+            case Color.IBlockColor:
                 Console.ForegroundColor = ConsoleColor.Cyan;
                 break;
-            case TetirsColor.Blue:
+            case Color.LBlockColor:
                 Console.ForegroundColor = ConsoleColor.Blue;
                 break;
-            case TetirsColor.White:
-                Console.ForegroundColor = ConsoleColor.White;
+            case Color.OBlockColor:
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
                 break;
-            case TetirsColor.Yellow:
+            case Color.JBlockColor:
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 break;
-            case TetirsColor.Green:
+            case Color.SBlockColor:
                 Console.ForegroundColor = ConsoleColor.Green;
                 break;
-            case TetirsColor.Magenta:
+            case Color.TBlockColor:
                 Console.ForegroundColor = ConsoleColor.Magenta;
                 break;
-            case TetirsColor.Red:
+            case Color.ZBlockColor:
                 Console.ForegroundColor = ConsoleColor.Red;
                 break;
             default:
@@ -32,5 +43,6 @@ public class TetrisUtils
                 break;
         }
     }
+
 }
 

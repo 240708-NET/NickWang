@@ -1,28 +1,28 @@
 
-public class TetrisShape : ICloneable
+public class Shape : ICloneable
 {
     public Coordinate Dimension { get; set; }
-    public Coordinate[] Shape { get; set; }
-    public TetirsColor Color { get; set; }
+    public Coordinate[] Shapes { get; set; }
+    public Color Color { get; set; }
 
-    public TetrisShape()
+    public Shape()
     {
         Dimension = new Coordinate(0, 0);
-        Shape = Array.Empty<Coordinate>();
-        Color = TetirsColor.Gray;
+        Shapes = Array.Empty<Coordinate>();
+        Color = Color.DefaultColor;
     }
 
-    public TetrisShape(Coordinate dimension, Coordinate[] shape, TetirsColor color)
+    public Shape(Coordinate dimension, Coordinate[] shape, Color color)
     {
         Dimension = dimension;
-        Shape = shape;
+        Shapes = shape;
         Color = color;
     }
 
     public void RotateRight()
     {
         Dimension.RotateDimensionRight();
-        foreach (Coordinate c in Shape)
+        foreach (Coordinate c in Shapes)
         {
             c.RotateRight(Dimension);
         }
@@ -30,7 +30,7 @@ public class TetrisShape : ICloneable
 
     public void UndoRotate()
     {
-        foreach (Coordinate c in Shape)
+        foreach (Coordinate c in Shapes)
         {
             c.UndoRotate(Dimension);
         }
